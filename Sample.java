@@ -5,14 +5,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Sample {
+    private static String DB_NAME = "sample.db";
+    
+    public Connection connect() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:sqlite:" + DB_NAME);
+        } catch (SQLException e) {
+            System.err.println("cannot connect to database: " + e.getMessage());
+        } finally {
+            return connection;
+        }
+    }
+    
     public static void main(String[] args) throws ClassNotFoundException {
         // load the sqlite-JDBC driver using the current class loader
         Class.forName("org.sqlite.JDBC");
 
+        Sample testDb = new Sample();
         Connection connection = null;
         try {
             // create a database connection
-            connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+            connection = testDb.connect();
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -49,4 +63,5 @@ public class Sample {
             }
         }
     }
+    
 }
