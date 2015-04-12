@@ -16,6 +16,15 @@ public class Sample {
         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS person (id integer, name string);");
     }
     
+    public void addSampleData(Statement stmt) throws SQLException {
+        stmt.executeUpdate("insert into person values(1, 'leo');");
+        stmt.executeUpdate("insert into person values(2, 'yui');");
+    }
+    
+    public ResultSet query(Statement stmt) throws SQLException {
+        return stmt.executeQuery("SELECT id, name FROM person;");
+    }
+    
     public static void main(String[] args) throws ClassNotFoundException {
         // load the sqlite-JDBC driver using the current class loader
         Class.forName("org.sqlite.JDBC");
@@ -29,10 +38,9 @@ public class Sample {
             statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
             testDb.createTable(statement);
-            statement.executeUpdate("insert into person values(1, 'leo');");
-            statement.executeUpdate("insert into person values(2, 'yui');");
+            testDb.addSampleData(statement);
             
-            ResultSet rs = statement.executeQuery("select id, name from person;");
+            ResultSet rs = testDb.query(statement);
             if (!rs.isBeforeFirst()) {
                 System.out.println("no data found.");
             } else {
