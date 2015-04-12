@@ -7,15 +7,13 @@ import java.sql.Statement;
 public class Sample {
     private static String DB_NAME = "sample.db";
     
-    public Connection connect() {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:" + DB_NAME);
-        } catch (SQLException e) {
-            System.err.println("cannot connect to database: " + e.getMessage());
-        } finally {
-            return connection;
-        }
+    public Connection connect() throws SQLException {
+        return DriverManager.getConnection("jdbc:sqlite:" + DB_NAME);
+    }
+    
+    public void createTable(Statement stmt) throws SQLException {
+        stmt.executeUpdate("DROP TABLE IF EXISTS person;");
+        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS person (id integer, name string);");
     }
     
     public static void main(String[] args) throws ClassNotFoundException {
@@ -30,8 +28,7 @@ public class Sample {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-            statement.executeUpdate("drop table if exists person;");
-            statement.executeUpdate("create table person (id integer, name string);");
+            testDb.createTable(statement);
             statement.executeUpdate("insert into person values(1, 'leo');");
             statement.executeUpdate("insert into person values(2, 'yui');");
             
