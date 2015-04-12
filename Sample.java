@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,10 +15,22 @@ public class Sample {
     }
     
     public void createTable() throws SQLException {
-        Statement statement = _connection.createStatement();
-        statement.executeUpdate("DROP TABLE IF EXISTS person;");
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS person (id integer, name string);");
-        addSampleData();
+        boolean hasTable = false;
+        DatabaseMetaData md = _connection.getMetaData();
+        ResultSet rs = md.getTables(null, null, "%", null);
+        while (rs.next()) {
+            if (rs.getString(3).equals("person")) {
+                hasTable = true;
+                break;
+            }
+        }
+        
+        if (!hasTable) {
+            Statement statement = _connection.createStatement();
+            statement.executeUpdate("DROP TABLE IF EXISTS person;");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS person (id integer, name string);");
+            addSampleData();
+        }
     }
     
     public void addSampleData() throws SQLException {
